@@ -57,25 +57,24 @@ RUN virtualenv --python python3 /env
 ENV PATH="/env/bin:$PATH"
 
 # Install python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
+RUN /env/bin/pip install --upgrade pip
+RUN /env/bin/pip install -r requirements.txt
+RUN /env/bin/pip uninstall -y Pillow
 # Get training data to
 COPY /datasetGenerator /app/code/trdg
 WORKDIR /app/code/trdg
 
-# RUN pip3 install --upgrade pip3
-RUN pip install codecov
-RUN pip install --upgrade setuptools
+RUN /env/bin/pip install codecov
+RUN /env/bin/pip install --upgrade setuptools
 
 RUN git clone https://github.com/python-pillow/Pillow.git \
  && cd Pillow \
  && git checkout 7.0.x \
- && python setup.py build_ext --enable-freetype install && \
- python setup.py install 
+ && /env/bin/python setup.py build_ext --enable-freetype install && \
+ /env/bin/python setup.py install 
 
-RUN pip install -r requirements.txt
-RUN pip install pytest
+RUN /env/bin/pip install -r requirements.txt
+RUN /env/bin/pip install pytest
 
 
 
