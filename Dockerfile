@@ -4,6 +4,10 @@ ARG DOCKER_VERSION=1.0.1
 FROM ubuntu:${UBUNTU_VERSION} as base
 
 ENV MODEL_NAME = new_model
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 
 
 RUN apt-get update && \
@@ -11,29 +15,73 @@ RUN apt-get update && \
   curl git unzip automake libtool software-properties-common build-essential wget \
   pkg-config libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev libicu-dev libpango1.0-dev libcairo2-dev
 
-RUN apt-get update && \
-	apt-get install -y python3-pip
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get install -y \
+    git \
+    locales \
+    python3-pip \
+    libsm6 \
+    libfontconfig1 \
+    libxrender1 \
+    zlib1g-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    libxext6 \
+    libraqm-dev \
+    virtualenv \
+    libgl1-mesa-glx \
+ && rm -rf /var/lib/apt/lists/*
+
+# Set the locale
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
 
 # Clone git repo
-RUN mkdir /home/app && \      
-           cd /home/app && \        
+RUN mkdir /app /app/code && \      
+           cd /app/code && \        
            git clone https://github.com/tesseract-ocr/tesstrain.git
 
-# Set working directory
-WORKDIR /home/app/tesstrain
 
-RUN mkdir  /home/app/tesstrain/data /home/app/tesstrain/data/new_model && \
-mkdir /home/app/tesstrain/data/new_model-ground-truth
+# Set working directory
+WORKDIR /app/code/tesstrain
+
+RUN mkdir  /app/code/tesstrain/data/ /app/code/tesstrain/data/new_model && \
+mkdir /app/code/tesstrain/data/new_model-ground-truth
 
 # Install and compile Tesseract
 RUN make leptonica tesseract
 
+RUN virtualenv --python python3 /env
+ENV PATH="/env/bin:$PATH"
+
 # Install python dependencies
-RUN pip3 install -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 # Get training data to
+COPY /datasetGenerator /app/code/trdg
+WORKDIR /app/code/trdg
+
+# RUN pip3 install --upgrade pip3
+RUN pip install codecov
+RUN pip install --upgrade setuptools
+
+RUN git clone https://github.com/python-pillow/Pillow.git \
+ && cd Pillow \
+ && git checkout 7.0.x \
+ && python setup.py build_ext --enable-freetype install && \
+ python setup.py install 
+
+RUN pip install -r requirements.txt
+RUN pip install pytest
+
+
+
+# WORKDIR /app/code/tesstrain
 
 # start training
-RUN make training MODEL_NAME=new_model
+# RUN make training MODEL_NAME=new_model
 
 # RUN make training MODEL_NAME = MODEL_NAME
