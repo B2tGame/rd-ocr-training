@@ -12,7 +12,7 @@ ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update && \
 	apt-get install -y \
-  curl git unzip automake libtool software-properties-common build-essential wget \
+  curl git unzip automake libtool software-properties-common build-essential wget bc \
   pkg-config libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev libicu-dev libpango1.0-dev libcairo2-dev
 
 RUN apt-get update \
@@ -39,10 +39,13 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
 
 # Clone git repo
-RUN mkdir /app /app/code && \      
+RUN mkdir /app /app/code  && \      
            cd /app/code && \        
            git clone https://github.com/tesseract-ocr/tesstrain.git
 
+# Copy entrypoint script
+COPY commands.sh /app/code/commands.sh
+RUN ["chmod", "+x", "/app/code/commands.sh"]
 
 # Set working directory
 WORKDIR /app/code/tesstrain
@@ -56,7 +59,7 @@ RUN make leptonica tesseract
 RUN virtualenv --python python3 /env
 ENV PATH="/env/bin:$PATH"
 
-# Install python dependencies
+# Install python dependencies 
 RUN /env/bin/pip install --upgrade pip
 RUN /env/bin/pip install -r requirements.txt
 RUN /env/bin/pip uninstall -y Pillow
@@ -76,9 +79,9 @@ RUN git clone https://github.com/python-pillow/Pillow.git \
 RUN /env/bin/pip install -r requirements.txt
 RUN /env/bin/pip install pytest
 
-
-
 # WORKDIR /app/code/tesstrain
+
+ENTRYPOINT [ "/app/code/commands.sh" ]
 
 # start training
 # RUN make training MODEL_NAME=new_model

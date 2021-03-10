@@ -21,3 +21,4 @@ master.zip
 plot/*.LOG
 plot/ocrd*
 out/images/*
+out/model/*
