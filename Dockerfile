@@ -7,7 +7,8 @@ ENV MODEL_NAME = new_model
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
+ENV NUM_IMG=200
+ENV IMG_FMT=png
 
 
 RUN apt-get update && \
@@ -79,11 +80,4 @@ RUN git clone https://github.com/python-pillow/Pillow.git \
 RUN /env/bin/pip install -r requirements.txt
 RUN /env/bin/pip install pytest
 
-# WORKDIR /app/code/tesstrain
-
 ENTRYPOINT [ "/app/code/commands.sh" ]
-
-# start training
-# RUN make training MODEL_NAME=new_model
-
-# RUN make training MODEL_NAME = MODEL_NAME
