@@ -483,7 +483,7 @@ def main():
             with open(
                 os.path.join(args.output_dir, file_name2), "a+", encoding="utf8"
             ) as t:
-                t.write(strings[i])
+                t.write("{}\n".format(strings[i]))
 
 
 
