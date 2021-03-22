@@ -10,6 +10,7 @@ ENV LC_ALL en_US.UTF-8
 ENV NUM_IMG=200
 ENV IMG_FMT=png
 ENV IMG_TYPE=RGB
+ENV START_MODEL=eng
 
 
 RUN apt-get update && \
