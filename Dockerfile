@@ -1,5 +1,6 @@
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=22.04
 ARG DOCKER_VERSION=1.0.1
+ARG DEBIAN_FRONTEND=noninteractive
 
 FROM ubuntu:${UBUNTU_VERSION} as base
 
@@ -37,6 +38,10 @@ RUN apt-get update \
     libgl1-mesa-glx \
  && rm -rf /var/lib/apt/lists/*
 
+RUN apt update \
+  && apt install -y && apt upgrade -y \ 
+  make
+
 # Set the locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
@@ -58,6 +63,7 @@ mkdir /app/code/tesstrain/data/new_model-ground-truth
 
 # Install and compile Tesseract
 RUN make leptonica tesseract
+RUN make tesseract-langdata
 
 RUN virtualenv --python python3 /env
 ENV PATH="/env/bin:$PATH"
@@ -71,13 +77,15 @@ COPY /datasetGenerator /app/code/trdg
 WORKDIR /app/code/trdg
 
 RUN /env/bin/pip install codecov
-RUN /env/bin/pip install --upgrade setuptools
+RUN /env/bin/pip install --upgrade pip setuptools wheel
 
 RUN git clone https://github.com/python-pillow/Pillow.git \
  && cd Pillow \
  && git checkout 7.0.x \
  && /env/bin/python setup.py build_ext --enable-freetype install && \
  /env/bin/python setup.py install 
+
+RUN /env/bin/pip install --upgrade pip
 
 RUN /env/bin/pip install -r requirements.txt
 RUN /env/bin/pip install pytest
