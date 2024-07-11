@@ -8,6 +8,9 @@ to generate sample files with fonts in custom
 
 ``` docker run -v C:/Users/julie/Documents/GitHub/tesstrain/out/images:/app/code/tesstrain/data/new_model-ground-truth -v C:/Users/julie/Documents/GitHub/tesstrain/out/font:/app/code/trdg trdg/fonts/custom/ -v C:/Users/julie/Documents/GitHub/tesstrain/out/model:/app/code/tesstrain/data/new_model -v C:/Users/julie/Documents/GitHub/tesstrain/out/new_model.traineddata:/app/code/tesstrain/data/new_model.traineddata -e START_MODEL=frk -t tesstrain:justTrain``` 
 
+```  docker run -v ${pwd}/out/images:/app/code/tesstrain/data/new_model-ground-truth -v ${pwd}/out/font:/app/code/trdg/trdg/fonts/custom/ -v ${pwd}/out/model:/app/code/tesstrain/data/new_model -v ${pwd}/out/new_model.traineddata:/app/code/tesstrain/data/new_model.traineddata -e START_MODEL=eng -t tesstrain:static``` 
+
+
 Envirronment variables :
 - NUM_IMG : number of images to create
 - IMG_FMT : extension for the images (png, jpg, tif)

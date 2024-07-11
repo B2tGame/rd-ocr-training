@@ -46,10 +46,11 @@ RUN apt update \
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
 
-# Clone git repo
+# Copy Tesstrain repo
 RUN mkdir /app /app/code  && \      
-           cd /app/code && \        
-           git clone https://github.com/tesseract-ocr/tesstrain.git
+           cd /app/code
+
+COPY /tesstrain /app/code/tesstrain
 
 # Copy entrypoint script
 COPY commands.sh /app/code/commands.sh
