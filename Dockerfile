@@ -90,5 +90,7 @@ RUN /env/bin/pip install --upgrade pip
 
 RUN /env/bin/pip install -r requirements.txt
 RUN /env/bin/pip install pytest
+RUN /env/bin/pip install numpy --upgrade
+RUN /env/bin/pip install opencv-python --upgrade
 
 ENTRYPOINT [ "/app/code/commands.sh" ]
